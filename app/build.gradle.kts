@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
+    id("jacoco")
+}
+
+jacoco {
+    toolVersion = "0.8.13"
 }
 
 android {
@@ -28,6 +33,8 @@ android {
                 "PICPAY_SERVICE_BASE_URL",
                 "\"https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/\""
             )
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
         }
         release {
             buildConfigField(
@@ -45,17 +52,81 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests.all {
+            // "jacoco.includeNoLocationClasses" não existe mais → remover
+        }
+    }
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    group = "verification"
+    description = "Generate Jacoco coverage report"
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+
+        // 👇 garante que o HTML vai para uma pasta previsível
+        html.outputLocation.set(
+            layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html")
+        )
+        xml.outputLocation.set(
+            layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        )
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R\$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*"
+    )
+
+    val debugTree = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+        exclude(fileFilter)
+    }
+
+    classDirectories.setFrom(debugTree)
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+
+    val jacocoDir = layout.buildDirectory.dir("jacoco")
+    val unitTestCoverageDir = layout.buildDirectory.dir("outputs/unit_test_code_coverage/debugUnitTest")
+
+    executionData.setFrom(
+        files(
+            fileTree(jacocoDir) {
+                include("**/*.exec")
+            },
+            fileTree(unitTestCoverageDir) {
+                include("**/*.exec")
+            }
+        )
+    )
+
+    doFirst {
+        println(">>> buildDir = ${layout.buildDirectory.get().asFile.absolutePath}")
+        println(">>> debug classes = ${debugTree.files}")
+        println(">>> jacoco dir files: ${fileTree(jacocoDir).files}")
+        println(">>> unit test coverage dir files: ${fileTree(unitTestCoverageDir).files}")
+        println(">>> html report will be at: ${reports.html.outputLocation.get().asFile.absolutePath}")
+        println(">>> xml report will be at: ${reports.xml.outputLocation.get().asFile.absolutePath}")
     }
 }
 
