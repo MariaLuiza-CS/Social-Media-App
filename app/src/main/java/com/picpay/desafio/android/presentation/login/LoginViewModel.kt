@@ -52,8 +52,7 @@ class LoginViewModel(
                             LoginEffect.NavigateToHome
                         )
                         _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            user = result.data
+                            isLoading = false
                         )
                     }
 
