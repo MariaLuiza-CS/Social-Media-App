@@ -35,6 +35,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavHostController
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.picpay.desafio.android.BuildConfig
 import com.picpay.desafio.android.R
 import com.picpay.desafio.android.presentation.home.HomeScreen
 import com.picpay.desafio.android.presentation.utils.ErrorScreen
@@ -66,7 +67,7 @@ fun LoginScreen(
     val credentialManager = CredentialManager.create(context)
 
     val googleIdOption = GetGoogleIdOption.Builder()
-        .setServerClientId("323443411318-qml04ht0bn5tdm8969hohdsj6aebeuh6.apps.googleusercontent.com")
+        .setServerClientId(BuildConfig.SERVER_CLIENT_ID)
         .setFilterByAuthorizedAccounts(false)
         .build()
 
