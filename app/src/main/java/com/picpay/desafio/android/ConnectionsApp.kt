@@ -11,12 +11,12 @@ import com.picpay.desafio.android.di.feature.mainModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class PicPay : Application() {
+class ConnectionsApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
         startKoin {
-            androidContext(this@PicPay)
+            androidContext(this@ConnectionsApp)
 
             modules(
                 listOf(

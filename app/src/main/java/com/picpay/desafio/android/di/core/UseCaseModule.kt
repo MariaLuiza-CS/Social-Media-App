@@ -8,17 +8,17 @@ import org.koin.dsl.module
 val useCaseModule = module {
     factory {
         GetUsersUseCase(
-            userRepository = get()
+            contactUserRepository = get()
         )
     }
     factory {
         SignInWithGoogleUseCase(
-            authenticationRepository = get()
+            userRepository = get()
         )
     }
     factory {
         GetLocalCurrentUseCase(
-            authenticationRepository = get()
+            userRepository = get()
         )
     }
 }

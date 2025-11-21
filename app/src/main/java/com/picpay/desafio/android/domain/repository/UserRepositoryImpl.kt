@@ -1,68 +1,78 @@
 package com.picpay.desafio.android.domain.repository
 
-import com.picpay.desafio.android.data.local.UserDao
-import com.picpay.desafio.android.data.remote.PicPayService
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.picpay.desafio.android.data.local.dao.UserDao
 import com.picpay.desafio.android.data.repository.UserRepository
+import com.picpay.desafio.android.domain.model.ContactUser
 import com.picpay.desafio.android.domain.model.Result
-import com.picpay.desafio.android.domain.model.User
-import com.picpay.desafio.android.domain.util.toUser
-import com.picpay.desafio.android.domain.util.toUserEntity
+import com.picpay.desafio.android.domain.util.toAuthenticationPersonEntity
+import com.picpay.desafio.android.domain.util.toAuthenticationUser
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 
 class UserRepositoryImpl(
-    private val picPayService: PicPayService,
+    private val firebaseAuth: FirebaseAuth,
     private val userDao: UserDao
 ) : UserRepository {
-    override fun getUsers(): Flow<Result<List<User>>> = flow {
+    override fun getLocalCurrentUser(): Flow<Result<ContactUser?>> = flow {
         emit(Result.Loading)
 
-        val getLocalUsers = userDao.getUsers()
+        emitAll(
+            userDao.getUser()
+                .map { entity ->
+                    Result.Success(entity?.toAuthenticationUser())
+                }
+                .catch { e ->
+                    emit(Result.Error(exception = e, message = e.message))
+                }
+        )
+    }
 
-        var hasLocalUsers = false
+    override fun getCurrentUser(): Flow<Result<FirebaseUser?>> = flow {
+        emit(Result.Loading)
 
-        val initialLocalUsers = getLocalUsers.firstOrNull().orEmpty()
-
-        if (initialLocalUsers.isNotEmpty()) {
-            hasLocalUsers = true
+        try {
+            val user = firebaseAuth.currentUser
+            emit(Result.Success(user))
+        } catch (e: Exception) {
             emit(
-                Result.Success(
-                    initialLocalUsers.map {
-                        it.toUser()
-                    }
+                Result.Error(
+                    exception = e,
+                    message = e.message
                 )
             )
         }
+    }
 
+    override fun signOut() {
+        firebaseAuth.signOut()
+    }
+
+    override fun signInWithGoogle(idToken: String): Flow<Result<FirebaseUser>> = flow {
+        emit(Result.Loading)
         try {
-            val usersFromApi = picPayService.getUsers()
-                .map {
-                    it.toUserEntity()
-                }
-            userDao.insertUsers(usersFromApi)
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val result = firebaseAuth.signInWithCredential(credential).await()
+            val firebaseUser = result.user!!
+            emit(
+                Result.Success(firebaseUser)
+            )
+            userDao.insertUser(
+                firebaseUser.toAuthenticationPersonEntity()
+            )
         } catch (e: Exception) {
-            if (!hasLocalUsers) {
-                emit(
-                    Result.Error(
-                        exception = e,
-                        message = e.message
-                    )
+            emit(
+                Result.Error(
+                    exception = e,
+                    message = e.message
                 )
-            }
-        }
-
-        getLocalUsers.collect { entities ->
-            if (entities.isNotEmpty()) {
-                emit(
-                    Result.Success(
-                        entities.map {
-                            it.toUser()
-                        }
-                    )
-                )
-            }
-
+            )
         }
     }
 }

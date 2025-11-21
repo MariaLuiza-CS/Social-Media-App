@@ -1,9 +1,9 @@
 package com.picpay.desafio.android.domain.repository
 
-import com.picpay.desafio.android.data.local.UserDao
-import com.picpay.desafio.android.data.local.UserEntity
-import com.picpay.desafio.android.data.remote.PicPayService
-import com.picpay.desafio.android.data.remote.dto.UserResponseDto
+import com.picpay.desafio.android.data.local.dao.ContactUserDao
+import com.picpay.desafio.android.data.local.entity.ContactUserEntity
+import com.picpay.desafio.android.data.remote.service.PicPayService
+import com.picpay.desafio.android.data.remote.dto.ContactUserResponseDto
 import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.model.User
 import kotlinx.coroutines.Dispatchers
@@ -23,37 +23,37 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class FakePicPayService(
-    var usersToReturn: List<UserResponseDto> = emptyList(),
+    var usersToReturn: List<ContactUserResponseDto> = emptyList(),
     var exceptionToThrow: Exception? = null
 ) : PicPayService {
-    override suspend fun getUsers(): List<UserResponseDto> {
+    override suspend fun getContactUsers(): List<ContactUserResponseDto> {
         exceptionToThrow?.let { throw it }
         return usersToReturn
     }
 }
 
-class FakeUserDao(
-    initialUsers: List<UserEntity> = emptyList()
-) : UserDao {
+class FakeContactUserDao(
+    initialUsers: List<ContactUserEntity> = emptyList()
+) : ContactUserDao {
 
     private val usersFlow = MutableStateFlow(initialUsers)
 
-    override fun getUsers(): Flow<List<UserEntity>> = usersFlow
+    override fun getContactUsersList(): Flow<List<ContactUserEntity>> = usersFlow
 
-    override suspend fun cleanUsers() {
+    override suspend fun cleanContactUsersList() {
         usersFlow.value = emptyList()
     }
 
-    override suspend fun insertUsers(users: List<UserEntity>) {
-        usersFlow.value = users
+    override suspend fun insertContactUsersList(contactUsersList: List<ContactUserEntity>) {
+        usersFlow.value = contactUsersList
     }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserRepositoryImplTest {
-    private lateinit var userRepositoryImpl: UserRepositoryImpl
+class ContactUsersRepositoryImplTest {
+    private lateinit var contactUsersRepositoryImpl: ContactUserRepositoryImplContact
     private lateinit var fakePicPayService: FakePicPayService
-    private lateinit var fakeUserDao: FakeUserDao
+    private lateinit var fakeUserDao: FakeContactUserDao
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -62,11 +62,11 @@ class UserRepositoryImplTest {
         Dispatchers.setMain(testDispatcher)
 
         fakePicPayService = FakePicPayService()
-        fakeUserDao = FakeUserDao()
+        fakeUserDao = FakeContactUserDao()
 
-        userRepositoryImpl = UserRepositoryImpl(
+        contactUsersRepositoryImpl = ContactUserRepositoryImplContact(
             picPayService = fakePicPayService,
-            userDao = fakeUserDao
+            contactUserDao = fakeUserDao
         )
     }
 
@@ -78,11 +78,11 @@ class UserRepositoryImplTest {
     @Test
     fun `test when no local users database and api success and emits Loading then Success`() =
         runTest {
-            fakeUserDao = FakeUserDao(initialUsers = emptyList())
+            fakeUserDao = FakeContactUserDao(initialUsers = emptyList())
 
             fakePicPayService = FakePicPayService(
                 usersToReturn = listOf(
-                    UserResponseDto(
+                    ContactUserResponseDto(
                         id = "1843",
                         name = "Ada Lovelace",
                         username = "ada1843",
@@ -91,15 +91,15 @@ class UserRepositoryImplTest {
                 )
             )
 
-            userRepositoryImpl = UserRepositoryImpl(
+            contactUsersRepositoryImpl = ContactUserRepositoryImplContact(
                 picPayService = fakePicPayService,
-                userDao = fakeUserDao
+                contactUserDao = fakeUserDao
             )
 
             val emissions = mutableListOf<Result<List<User>>>()
 
             val job = launch {
-                userRepositoryImpl.getUsers().collect { value ->
+                contactUsersRepositoryImpl.getContactUsers().collect { value ->
                     emissions.add(value)
                 }
             }
@@ -123,7 +123,7 @@ class UserRepositoryImplTest {
     fun `test when exists local users database and api success and emits Loading then Cache Success then Update Data Success`() =
         runTest {
             val localEntities = listOf(
-                UserEntity(
+                ContactUserEntity(
                     id = "1843",
                     name = "Ada Lovelace",
                     username = "ada1843",
@@ -131,10 +131,10 @@ class UserRepositoryImplTest {
                 )
             )
 
-            fakeUserDao = FakeUserDao(initialUsers = localEntities)
+            fakeUserDao = FakeContactUserDao(initialUsers = localEntities)
 
             val remoteUsers = listOf(
-                UserResponseDto(
+                ContactUserResponseDto(
                     id = "1952",
                     name = "Bell Hooks",
                     username = "bell1952",
@@ -146,15 +146,15 @@ class UserRepositoryImplTest {
                 usersToReturn = remoteUsers
             )
 
-            userRepositoryImpl = UserRepositoryImpl(
+            contactUsersRepositoryImpl = ContactUserRepositoryImplContact(
                 picPayService = fakePicPayService,
-                userDao = fakeUserDao
+                contactUserDao = fakeUserDao
             )
 
             val emissions = mutableListOf<Result<List<User>>>()
 
             val job = launch {
-                userRepositoryImpl.getUsers().collect { value ->
+                contactUsersRepositoryImpl.getContactUsers().collect { value ->
                     emissions.add(value)
                 }
             }
@@ -177,21 +177,21 @@ class UserRepositoryImplTest {
     @Test
     fun `test when no local users database and api fail and emits Loading then Error`() =
         runTest {
-            fakeUserDao = FakeUserDao(initialUsers = emptyList())
+            fakeUserDao = FakeContactUserDao(initialUsers = emptyList())
 
             fakePicPayService = FakePicPayService(
                 exceptionToThrow = RuntimeException("Network error")
             )
 
-            userRepositoryImpl = UserRepositoryImpl(
+            contactUsersRepositoryImpl = ContactUserRepositoryImplContact(
                 picPayService = fakePicPayService,
-                userDao = fakeUserDao
+                contactUserDao = fakeUserDao
             )
 
             val emissions = mutableListOf<Result<List<User>>>()
 
             val job = launch {
-                userRepositoryImpl.getUsers().collect { value ->
+                contactUsersRepositoryImpl.getContactUsers().collect { value ->
                     emissions.add(value)
                 }
             }
@@ -213,7 +213,7 @@ class UserRepositoryImplTest {
     fun `test when exists local users database and api fail and emits Loading then Success`() =
         runTest {
             val localEntities = listOf(
-                UserEntity(
+                ContactUserEntity(
                     id = "1952",
                     name = "Bell Hooks",
                     username = "bell1952",
@@ -221,21 +221,21 @@ class UserRepositoryImplTest {
                 )
             )
 
-            fakeUserDao = FakeUserDao(initialUsers = localEntities)
+            fakeUserDao = FakeContactUserDao(initialUsers = localEntities)
 
             fakePicPayService = FakePicPayService(
                 exceptionToThrow = RuntimeException("Network error")
             )
 
-            userRepositoryImpl = UserRepositoryImpl(
+            contactUsersRepositoryImpl = ContactUserRepositoryImplContact(
                 picPayService = fakePicPayService,
-                userDao = fakeUserDao
+                contactUserDao = fakeUserDao
             )
 
             val emissions = mutableListOf<Result<List<User>>>()
 
             val job = launch {
-                userRepositoryImpl.getUsers().collect { value ->
+                contactUsersRepositoryImpl.getContactUsers().collect { value ->
                     emissions.add(value)
                 }
             }

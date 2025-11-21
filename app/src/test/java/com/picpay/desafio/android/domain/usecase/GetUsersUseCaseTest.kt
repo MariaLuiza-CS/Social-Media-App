@@ -1,6 +1,6 @@
 package com.picpay.desafio.android.domain.usecase
 
-import com.picpay.desafio.android.data.repository.UserRepository
+import com.picpay.desafio.android.data.repository.ContactUserRepository
 import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.model.User
 import io.mockk.coEvery
@@ -14,8 +14,8 @@ import kotlin.test.assertSame
 
 class GetUsersUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private val getUsersUseCase = GetUsersUseCase(userRepository)
+    private val contactUserRepository: ContactUserRepository = mockk()
+    private val getUsersUseCase = GetUsersUseCase(contactUserRepository)
 
     @Test
     fun `test if when call getUsersUseCase call getUsers() do UserRepository`() = runTest {
@@ -32,7 +32,7 @@ class GetUsersUseCaseTest {
             flowOf(Result.Success(fakeUsersList))
 
         coEvery {
-            userRepository.getUsers()
+            contactUserRepository.getContactUsers()
         } returns expectedFlow
 
         val resultFlow = getUsersUseCase()
@@ -40,7 +40,7 @@ class GetUsersUseCaseTest {
         coVerify(
             exactly = 1
         ) {
-            userRepository.getUsers()
+            contactUserRepository.getContactUsers()
         }
 
         assertSame(expectedFlow, resultFlow)

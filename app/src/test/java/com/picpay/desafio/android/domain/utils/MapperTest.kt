@@ -1,7 +1,7 @@
 package com.picpay.desafio.android.domain.utils
 
-import com.picpay.desafio.android.data.local.UserEntity
-import com.picpay.desafio.android.data.remote.dto.UserResponseDto
+import com.picpay.desafio.android.data.local.entity.ContactUserEntity
+import com.picpay.desafio.android.data.remote.dto.ContactUserResponseDto
 import com.picpay.desafio.android.domain.util.toUser
 import com.picpay.desafio.android.domain.util.toUserEntity
 import org.junit.Test
@@ -10,52 +10,52 @@ import kotlin.test.assertEquals
 class MapperTest {
     @Test
     fun `UserEntity to User should map all fields correctly`() {
-        val userEntity = UserEntity(
+        val contactUserEntity = ContactUserEntity(
             id = "1843",
             name = "Ada Lovelace",
             username = "ada1843",
             img = "ada/lovelace/img.jpg"
         )
 
-        val result = userEntity.toUser()
+        val result = contactUserEntity.toUser()
 
-        assertEquals(userEntity.id, result.id)
-        assertEquals(userEntity.name, result.name)
-        assertEquals(userEntity.username, result.username)
-        assertEquals(userEntity.img, result.img)
+        assertEquals(contactUserEntity.id, result.id)
+        assertEquals(contactUserEntity.name, result.name)
+        assertEquals(contactUserEntity.username, result.username)
+        assertEquals(contactUserEntity.img, result.img)
     }
 
     @Test
     fun `UserResponseDto to UserEntity should map all fields correctly`() {
-        val userResponseDto = UserResponseDto(
+        val contactUserResponseDto = ContactUserResponseDto(
             id = "1843",
             name = "Ada Lovelace",
             username = "ada1843",
             img = "ada/lovelace/img.jpg"
         )
 
-        val result = userResponseDto.toUserEntity()
+        val result = contactUserResponseDto.toUserEntity()
 
-        assertEquals(userResponseDto.id, result.id)
-        assertEquals(userResponseDto.name, result.name)
-        assertEquals(userResponseDto.username, result.username)
-        assertEquals(userResponseDto.img, result.img)
+        assertEquals(contactUserResponseDto.id, result.id)
+        assertEquals(contactUserResponseDto.name, result.name)
+        assertEquals(contactUserResponseDto.username, result.username)
+        assertEquals(contactUserResponseDto.img, result.img)
     }
 
     @Test
     fun `UserResponseDto to UserEntity should convert null id to empty string`() {
-        val userResponseDto = UserResponseDto(
+        val contactUserResponseDto = ContactUserResponseDto(
             id = null,
             name = "Ada Lovelace",
             username = "ada1843",
             img = "ada/lovelace/img.jpg"
         )
 
-        val result = userResponseDto.toUserEntity()
+        val result = contactUserResponseDto.toUserEntity()
 
         assertEquals("", result.id)
-        assertEquals(userResponseDto.name, result.name)
-        assertEquals(userResponseDto.username, result.username)
-        assertEquals(userResponseDto.img, result.img)
+        assertEquals(contactUserResponseDto.name, result.name)
+        assertEquals(contactUserResponseDto.username, result.username)
+        assertEquals(contactUserResponseDto.img, result.img)
     }
 }

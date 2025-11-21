@@ -49,6 +49,18 @@ android {
                 "\"https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/\""
             )
 
+            buildConfigField(
+                "String",
+                "PERSON_SERVICE_BASE_URL",
+                "\"https://randomuser.me/api/\""
+            )
+
+            buildConfigField(
+                "String",
+                "PHOTOS_SERVICE_BASE_URL",
+                "\"https://picsum.photos/v2/list/\""
+            )
+
             enableAndroidTestCoverage = true
             enableUnitTestCoverage = true
         }
@@ -58,8 +70,22 @@ android {
                 "PICPAY_SERVICE_BASE_URL",
                 "\"https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/\""
             )
+
+            buildConfigField(
+                "String",
+                "PERSON_SERVICE_BASE_URL",
+                "\"https://randomuser.me/api/\""
+            )
+
+            buildConfigField(
+                "String",
+                "PHOTOS_SERVICE_BASE_URL",
+                "\"https://picsum.photos/v2/list/\""
+            )
+
             isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
