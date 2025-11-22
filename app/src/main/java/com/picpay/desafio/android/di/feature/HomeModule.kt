@@ -1,13 +1,13 @@
 package com.picpay.desafio.android.di.feature
 
 import androidx.lifecycle.SavedStateHandle
-import com.picpay.desafio.android.presentation.home.HomeViewModel
+import com.picpay.desafio.android.presentation.contact.ContactViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val homeModule = module {
     viewModel { (savedStateHandle: SavedStateHandle) ->
-        HomeViewModel(
+        ContactViewModel(
             getUsersUseCase = get(),
             savedStateHandle = savedStateHandle
         )

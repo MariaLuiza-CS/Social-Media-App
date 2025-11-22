@@ -37,7 +37,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.picpay.desafio.android.BuildConfig
 import com.picpay.desafio.android.R
-import com.picpay.desafio.android.presentation.home.HomeScreen
+import com.picpay.desafio.android.presentation.contact.HomeScreen
 import com.picpay.desafio.android.presentation.utils.ErrorScreen
 import com.picpay.desafio.android.ui.monaSansFont
 import kotlinx.coroutines.CoroutineScope

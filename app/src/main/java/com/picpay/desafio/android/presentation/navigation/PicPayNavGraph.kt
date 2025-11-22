@@ -5,7 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.picpay.desafio.android.presentation.home.HomeScreen
+import com.picpay.desafio.android.presentation.contact.HomeScreen
+import com.picpay.desafio.android.presentation.contact.ContactScreen
 import com.picpay.desafio.android.presentation.login.LoginScreen
 import com.picpay.desafio.android.presentation.utils.ErrorScreen
 
@@ -19,7 +20,7 @@ fun PicPayNavGraph(
         startDestination = startNavigation
     ) {
         composable<HomeScreen> {
-            HomeScreen(navHostController)
+            ContactScreen(navHostController)
         }
         composable<ErrorScreen> { backStackEntry ->
             val args = backStackEntry.toRoute<ErrorScreen>()
