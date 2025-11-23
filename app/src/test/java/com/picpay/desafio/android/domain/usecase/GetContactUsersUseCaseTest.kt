@@ -12,10 +12,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertSame
 
-class GetUsersUseCaseTest {
+class GetContactUsersUseCaseTest {
 
     private val contactUserRepository: ContactUserRepository = mockk()
-    private val getUsersUseCase = GetUsersUseCase(contactUserRepository)
+    private val getContactUsersUseCase = GetContactUsersUseCase(contactUserRepository)
 
     @Test
     fun `test if when call getUsersUseCase call getUsers() do UserRepository`() = runTest {
@@ -35,7 +35,7 @@ class GetUsersUseCaseTest {
             contactUserRepository.getContactUsers()
         } returns expectedFlow
 
-        val resultFlow = getUsersUseCase()
+        val resultFlow = getContactUsersUseCase()
 
         coVerify(
             exactly = 1
