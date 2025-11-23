@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -50,11 +52,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val listState = rememberSaveable(
-        saver = LazyListState.Saver
-    ) {
-        LazyListState()
-    }
+    val listState = rememberLazyListState()
 
     Box(
         modifier = modifier
@@ -150,18 +148,18 @@ fun PersonItem(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(photo)
                     .diskCachePolicy(CachePolicy.ENABLED)
-                    .crossfade(true)
+                    .crossfade(false)
                     .build(),
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(4.dp)),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillWidth,
                 loading = {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(4f / 5f)
+                            .defaultMinSize(minHeight = 180.dp)
                             .shimmerEffect()
                     )
                 },
@@ -169,11 +167,11 @@ fun PersonItem(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(4f / 5f),
+                            .defaultMinSize(minHeight = 180.dp),
                         contentAlignment = Alignment.Center
                     ){
                         Text(
-                            text = "Error to download image",
+                            text = "Error to download image...",
                             fontFamily = monaSansFont,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.background,
