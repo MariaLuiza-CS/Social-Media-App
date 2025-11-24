@@ -13,16 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="PeopleDaoTest">
+      <SelectionState runConfigName="whenDaoEmpty_andApiFails_emitsError()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="UserDaoTest">
+      <SelectionState runConfigName="whenDaoHasData_emitsLoadingThenSuccess()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PersonServiceTest">
+      <SelectionState runConfigName="whenDaoEmpty_andApiSuccess_savesToDbAndEmitsSuccess() (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ContactUsersRepositoryImplInstrumentTest">
+      <SelectionState runConfigName="whenDaoChanges_emitsAgain()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="whenCallingRepository_callsApiOnlyOnce()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
