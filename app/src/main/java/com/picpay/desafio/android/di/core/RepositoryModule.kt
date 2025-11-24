@@ -18,7 +18,8 @@ val repositoryModule = module {
     single<UserRepository> {
         UserRepositoryImpl(
             firebaseAuth = get(),
-            userDao = get()
+            userDao = get(),
+            connectionsAppDataBase = get()
         )
     }
     single<PeopleRepository> {

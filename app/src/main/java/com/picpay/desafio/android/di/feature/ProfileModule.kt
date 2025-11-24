@@ -11,6 +11,7 @@ val profileModule = module {
             getGetLocalCurrentUseCase = get(),
             getContactUsersUseCase = get(),
             getPeopleWithPhotosUseCase = get(),
+            signOutGoogleUseCase = get(),
             savedStateHandle = savedStateHandle
         )
     }

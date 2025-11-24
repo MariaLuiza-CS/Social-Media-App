@@ -4,6 +4,7 @@ import com.picpay.desafio.android.domain.usecase.GetLocalCurrentUseCase
 import com.picpay.desafio.android.domain.usecase.GetPeopleWithPhotosUseCase
 import com.picpay.desafio.android.domain.usecase.GetContactUsersUseCase
 import com.picpay.desafio.android.domain.usecase.SignInWithGoogleUseCase
+import com.picpay.desafio.android.domain.usecase.SignOutGoogleUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -25,6 +26,11 @@ val useCaseModule = module {
     factory {
         GetPeopleWithPhotosUseCase(
             peopleRepository = get()
+        )
+    }
+    factory {
+        SignOutGoogleUseCase(
+            userRepository = get()
         )
     }
 }

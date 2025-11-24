@@ -7,14 +7,19 @@ import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.usecase.GetContactUsersUseCase
 import com.picpay.desafio.android.domain.usecase.GetLocalCurrentUseCase
 import com.picpay.desafio.android.domain.usecase.GetPeopleWithPhotosUseCase
+import com.picpay.desafio.android.domain.usecase.SignOutGoogleUseCase
+import com.picpay.desafio.android.presentation.main.MainEffect
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val getGetLocalCurrentUseCase: GetLocalCurrentUseCase,
     private val getContactUsersUseCase: GetContactUsersUseCase,
     private val getPeopleWithPhotosUseCase: GetPeopleWithPhotosUseCase,
+    private val signOutGoogleUseCase: SignOutGoogleUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -23,12 +28,19 @@ class ProfileViewModel(
     )
     var uiState: StateFlow<ProfileUiState> = _uiState
 
+    private val _effect = MutableSharedFlow<ProfileEffect>()
+    val effect = _effect.asSharedFlow()
+
     init {
         viewModelScope.launch {
             uiState.collect { newState ->
                 savedStateHandle["profileUiState"] = newState
             }
         }
+    }
+
+    private suspend fun sendEffect(effect: ProfileEffect) {
+        _effect.emit(effect)
     }
 
     fun onEvent(event: ProfileEvent) {
@@ -44,6 +56,19 @@ class ProfileViewModel(
             is ProfileEvent.LoadPeopleWithPhotoList -> {
                 loadPeopleWithPhotoList()
             }
+
+            is ProfileEvent.SignOut -> {
+                signOut()
+            }
+        }
+    }
+
+    private fun signOut() {
+        viewModelScope.launch {
+            signOutGoogleUseCase()
+            sendEffect(
+                ProfileEffect.NavigateToLogin
+            )
         }
     }
 

@@ -2,21 +2,12 @@ package com.picpay.desafio.android.ui
 
 import androidx.compose.ui.graphics.Color
 
-val Orange80 = Color(0xFFd45113)
-val Red80 = Color(0xFFFF0000)
-val DarkBg = Color(0xFF562c2c)
-val LightYellow80 = Color(0xFFf5dfbb)
+val Black = Color(0xFF000000)
+val Grey = Color(0xFF1C191F)
+val Green = Color(0xFF00cc65)
 val White = Color(0xFFFFFFFF)
 
-val Gold40 = Color(0xFFFFC100)
-val Orange40 = Color(0xFFd45113)
-val Red40 = Color(0xFFFF0000)
-val LightYellow40 = Color(0xFFf5dfbb)
-val DarkColor = Color(0xFF37323e)
+val LightWhite = Color(0xFFF3F5F7)
 
-val CabbagePont = Color(0xFF3a5060)
-val PeachOrange = Color(0xFFfdc89d)
 
-val SaharaSand = Color(0xFFf3e887)
-val WineBerry = Color(0xFF4b1c34)
 

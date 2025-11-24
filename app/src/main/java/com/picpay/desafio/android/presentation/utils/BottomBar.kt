@@ -33,7 +33,7 @@ fun BottomBar(
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.secondary
     ) {
         items.forEach { item ->
             val selected = currentRoute == item.route
@@ -65,7 +65,7 @@ fun BottomBar(
                     disabledTextColor = MaterialTheme.colorScheme.primary,
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     selectedTextColor = MaterialTheme.colorScheme.primary,
-                    selectedIndicatorColor = MaterialTheme.colorScheme.primary
+                    selectedIndicatorColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }

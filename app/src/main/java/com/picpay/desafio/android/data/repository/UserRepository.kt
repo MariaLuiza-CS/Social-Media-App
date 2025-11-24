@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     fun getLocalCurrentUser(): Flow<Result<ContactUser?>>
     fun getCurrentUser(): Flow<Result<FirebaseUser?>>
-    fun signOut()
+    suspend fun signOut()
     fun signInWithGoogle(idToken: String): Flow<Result<FirebaseUser>>
 }

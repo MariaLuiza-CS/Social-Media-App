@@ -102,7 +102,7 @@ fun PersonItem(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.secondary
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -139,9 +139,10 @@ fun PersonItem(
                             modifier = Modifier
                                 .matchParentSize()
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.background)
+                                .background(MaterialTheme.colorScheme.primary)
                                 .semantics {
-                                    contentDescription = context.getString(R.string.ctd_error_loading_data)
+                                    contentDescription =
+                                        context.getString(R.string.ctd_error_loading_data)
                                 }
                         )
                     }
@@ -154,7 +155,7 @@ fun PersonItem(
                         text = fistName ?: stringResource(R.string.txt_error_name),
                         fontFamily = monaSansFont,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.background,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 16.sp
                     )
                 }
@@ -186,12 +187,12 @@ fun PersonItem(
                             .defaultMinSize(minHeight = 180.dp),
                         contentAlignment = Alignment.Center,
 
-                    ) {
+                        ) {
                         Text(
                             text = stringResource(R.string.txt_error_download_image),
                             fontFamily = monaSansFont,
                             fontWeight = FontWeight.Thin,
-                            color = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 12.sp
                         )
                     }
@@ -205,7 +206,7 @@ fun PersonItem(
 fun PersonItemLoading(context: Context) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.secondary
         ),
         modifier = Modifier
             .fillMaxWidth()

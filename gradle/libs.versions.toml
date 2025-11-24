@@ -15,6 +15,7 @@ ksp = "2.0.21-1.0.25"
 coreTesting = "2.2.0"
 
 #Retrofit
+navigationTesting = "2.7.0"
 retrofitVersion = "2.11.0"
 retrofitSerializationVersion = "1.0.0"
 #Retrofit
@@ -67,11 +68,16 @@ coreSplashscreen = "1.0.0"
 detektVersion = "1.23.6"
 # Detekt
 
+# Robolectric
+robolectric = "4.12"
+# Robolectric
+
 [libraries]
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
 androidx-core = { module = "androidx.test:core", version.ref = "core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-junit-v115 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationTesting" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -142,6 +148,10 @@ googleid-v110 = { module = "com.google.android.libraries.identity.googleid:googl
 # Splash Screen
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 # Splash Screen
+
+# Robolectric
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+# Robolectric
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

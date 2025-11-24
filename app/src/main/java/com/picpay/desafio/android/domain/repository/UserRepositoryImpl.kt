@@ -3,22 +3,26 @@ package com.picpay.desafio.android.domain.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.picpay.desafio.android.data.local.ConnectionsAppDataBase
 import com.picpay.desafio.android.data.local.dao.UserDao
 import com.picpay.desafio.android.data.repository.UserRepository
 import com.picpay.desafio.android.domain.model.ContactUser
 import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.util.toAuthenticationPersonEntity
 import com.picpay.desafio.android.domain.util.toAuthenticationUser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val connectionsAppDataBase: ConnectionsAppDataBase
 ) : UserRepository {
     override fun getLocalCurrentUser(): Flow<Result<ContactUser?>> = flow {
         emit(Result.Loading)
@@ -50,8 +54,9 @@ class UserRepositoryImpl(
         }
     }
 
-    override fun signOut() {
+    override suspend  fun signOut() = withContext(Dispatchers.IO) {
         firebaseAuth.signOut()
+        connectionsAppDataBase.clearAllTables()
     }
 
     override fun signInWithGoogle(idToken: String): Flow<Result<FirebaseUser>> = flow {

@@ -13,19 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="whenDaoEmpty_andApiFails_emitsError()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="whenDaoHasData_emitsLoadingThenSuccess()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="whenDaoEmpty_andApiSuccess_savesToDbAndEmitsSuccess() (1)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="whenDaoChanges_emitsAgain()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="whenCallingRepository_callsApiOnlyOnce()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="getLocalCurrentUser_returns_loading_then_success()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="getCurrentUser_success_emits_user()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="getCurrentUser_failure_emits_error()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

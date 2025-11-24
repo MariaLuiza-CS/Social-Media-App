@@ -1,6 +1,7 @@
 package com.picpay.desafio.android.presentation.contact
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.picpay.desafio.android.R
@@ -140,6 +141,7 @@ fun ContactScreen(
                 ) {
                     items(uiState.users) { user ->
                         UserItem(
+                            context,
                             user.name,
                             user.username,
                             user.img
@@ -153,6 +155,7 @@ fun ContactScreen(
 
 @Composable
 fun UserItem(
+    context: Context,
     name: String?,
     username: String?,
     img: String?
@@ -163,7 +166,7 @@ fun UserItem(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(img)
                 .diskCachePolicy(CachePolicy.ENABLED)
@@ -171,7 +174,27 @@ fun UserItem(
             contentDescription = stringResource(R.string.ctd_image_profile),
             modifier = Modifier
                 .size(56.dp)
-                .clip(CircleShape)
+                .clip(CircleShape),
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .shimmerEffect()
+                )
+            },
+            error = {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .semantics {
+                            contentDescription =
+                                context.getString(R.string.ctd_error_loading_data)
+                        }
+                )
+            }
+
         )
 
         Spacer(modifier = Modifier.width(8.dp))

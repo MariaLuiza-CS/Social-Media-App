@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ fun ErrorScreen(
 
             Image(
                 painter = painterResource(R.drawable.img_animal),
-                contentDescription = "",
+                contentDescription = stringResource(R.string.ctd_error_loading_data),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(200.dp)
@@ -60,7 +61,7 @@ fun ErrorScreen(
 
             Text(
                 modifier = Modifier.padding(20.dp),
-                text = "Error Occured!",
+                text = stringResource(R.string.txt_error),
                 fontFamily = monaSansFont,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary,
@@ -73,7 +74,7 @@ fun ErrorScreen(
             Text(
                 modifier = Modifier.padding(20.dp),
                 text = messageError
-                    ?: "Sentimos muito pelo problema. Nosso time já esta trabalhando no problema.",
+                    ?: stringResource(R.string.txt_error_server),
                 fontFamily = monaSansFont,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.primary,
@@ -96,7 +97,7 @@ fun ErrorScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(8.dp),
-                    text = "Tentar novamente",
+                    text = stringResource(R.string.btn_try_again),
                     fontFamily = monaSansFont,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center

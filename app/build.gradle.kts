@@ -103,7 +103,12 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    testOptions{
+        unitTests.isIncludeAndroidResources = true
+    }
 }
+
 
 jacoco {
     toolVersion = "0.8.13"
@@ -203,7 +208,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.core)
     androidTestImplementation(libs.androidx.junit.v115)
+    androidTestImplementation(libs.androidx.navigation.testing)
 
+    testImplementation(libs.androidx.navigation.testing)
+    testImplementation(libs.androidx.ui.test.junit4)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.arch.core.testing)
@@ -253,7 +261,10 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.googleid.v110)
 
-    //Splash Screen
+    // Splash Screen
     implementation(libs.androidx.core.splashscreen)
     testImplementation(kotlin("test"))
+
+    // Robolectric
+    testImplementation(libs.robolectric)
 }
