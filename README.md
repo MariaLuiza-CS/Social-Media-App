@@ -1,279 +1,347 @@
-# Social Media App
+# 📱 Connections
 
-Aplicação Android escrita em **Kotlin** usando **Jetpack Compose**, estruturada como uma pequena **rede social de contatos**.  
-O projeto foca em **arquitetura limpa**, **boas práticas modernas**, **testes**, **CI** e **experiência de usuário acessível**.
+**Connections** é um aplicativo moderno de **mídia social** desenvolvido para facilitar conexões entre pessoas.  
+O app permite que usuários visualizem fotos de perfis, explorem listas de pessoas e naveguem por uma interface fluida construída com as tecnologias mais atuais do ecossistema Android.
 
----
+## 🏛️ Arquitetura
 
-## 🧱 Arquitetura
+O projeto **Connections** segue uma implementação sólida de **Clean Architecture**, garantindo um código organizado, escalável e de fácil manutenção.  
+A aplicação é dividida em camadas bem definidas, cada uma com responsabilidades específicas:
 
-O app segue uma abordagem inspirada em **Clean Architecture**, com separação clara de camadas e responsabilidades:
+### **📁 Data Layer**
+Responsável pelo acesso a dados da aplicação.
 
-### Camadas principais
+- **local/**  
+  Contém toda a implementação de persistência, incluindo:
+    - Room Database
+    - DAOs
+    - Entidades locais
 
-- **Presentation**
-    - Telas em **Jetpack Compose**.
-    - **ViewModels** usando **MVVM**.
-    - Gerenciamento de:
-        - `UiState` → estado atual da tela.
-        - `UiEvent` → ações/intentos do usuário.
-        - `UiEffect` → efeitos de “uma vez só” (navegação, mensagens, etc.).
-
-- **Domain**
-    - **Models de domínio** (ex.: `User`).
-    - **UseCases** com `operator fun invoke()` para uma API mais limpa:
-      ```kotlin
-      class GetUsersUseCase(
-          private val repository: UserRepository
-      ) {
-          operator fun invoke() = repository.getUsers()
-      }
-      ```
-    - Regras de negócio desacopladas das camadas de dados e de UI.
-
-- **Data**
-    - Implementações de **repositórios**.
-    - Comunicação com a **API (Retrofit)**.
-    - Persistência local com **Room**.
-    - Mapeamento entre DTOs, entidades locais e modelos de domínio.
-
-### Boas práticas e padrões
-
-- **Clean Code**: nomes claros, funções coesas, responsabilidades bem definidas.
-- **SOLID**:
-    - SRP (Single Responsibility Principle)
-    - ISP (Interface Segregation Principle)
-    - DIP (Dependency Inversion Principle)
-- Uso de **Dependency Injection** com **Koin** para desacoplar dependências e facilitar testes.
-- Design patterns aplicados de forma pontual (ex.: uso de Singletons via DI, não “na mão”).
+- **remote/**  
+  Abriga toda a comunicação com APIs externas, como:
+    - Retrofit
+    - DTOs
+    - Services
 
 ---
 
-## 🎨 Layout (UI)
+### **📁 DI (Dependency Injection)**
+Gerencia todos os módulos de injeção de dependência usando **Koin**.
 
-A interface é construída inteiramente com **Jetpack Compose**:
-
-- Uso de **Material 3** e componentes modernos.
-- Telas reativas conectadas ao `UiState` do ViewModel.
-- Estados contemplados:
-    - Loading (incluindo shimmer customizado).
-    - Lista de contatos carregada.
-    - Estados de erro / vazio.
-
-### Shimmer customizado
-
-- Implementado um **shimmer customizado** para a tela de contatos:
-    - Placeholders animados enquanto os dados são carregados.
-    - Feedback visual mais agradável e responsivo para o usuário.
-
-### Responsividade e ciclo de vida
-
-- Integração com **SavedStateHandle** / manejo de **SavedState**:
-    - Estado da tela é preservado em mudanças de configuração (ex.: rotação).
-    - Comportamento consistente durante todo o ciclo de vida da Activity.
+- **modules/**  
+  Onde ficam:
+    - Módulos de repositórios
+    - Módulos de use cases
+    - Módulos de viewmodels
+    - Configuração do banco de dados
+    - Configuração de rede
 
 ---
+
+### **📁 Domain Layer**
+Contém apenas regras de negócio e nada relacionado a frameworks.
+
+- **model/**  
+  Modelos puros da aplicação (entities do domínio).
+
+- **repository/**  
+  Interfaces que definem contratos para acesso a dados.
+  Implementações concretas ficam na camada *data*.
+
+- **usecase/**  
+  Cada caso de uso da aplicação é isolado em uma classe própria.
+
+---
+
+### **📁 Presentation Layer**
+Responsável pela UI e lógica de apresentação.
+
+- **views/**  
+  Telas construídas totalmente em **Jetpack Compose**.
+
+- **viewmodel/**  
+  Lógica de estado seguindo o padrão **MVI**, com:
+    - StateFlow para estados
+    - SharedFlow para efeitos one-shot
+
+- **navigation/**  
+  Implementação do Navigation Component com Compose para gerenciar rotas e argumentos.
+
+---
+
+### **📁 UI Layer**
+Contém toda a definição visual do app.
+
+- **colors/** — Paleta de cores da aplicação
+- **theme/** — Temas claros/escuros e estilos padrão
+- **typography/** — Fontes (ex: Mona Sans) e regras de tipografia
+
+---
+
+### **🧪 Testes**
+O projeto possui dois ambientes de teste distintos:
+
+#### **📦 test/** (Unit Tests + Roboletric)
+- Testes unitários dos use cases
+- Testes de viewmodel
+- Testes de repository com mocks
+- Testes de UI com **Robolectric** (sem precisar de dispositivo físico)
+
+#### **📦 androidTest/** (Instrumented Tests)
+- Testes instrumentados em dispositivos/emuladores Android
+- Testes de navegação
+- Testes de integração com banco de dados (Room)
+- Testes de fluxo completo de UI com Compose Testing
+
+### **📚 Princípios SOLID aplicados**
+
+O projeto adota ativamente alguns dos principais princípios do **SOLID**, contribuindo para um código mais limpo e flexível:
+
+- **SRP — Single Responsibility Principle**  
+  Cada classe possui apenas uma responsabilidade:
+    - UseCases fazem apenas 1 ação
+    - ViewModels gerenciam apenas estados e eventos da UI
+    - Repositórios apenas manipulam dados
+
+- **ISP — Interface Segregation Principle**  
+  Interfaces são pequenas e focadas:  
+  Ex.: o `UserRepository` define somente contratos relacionados ao usuário, sem métodos desnecessários.
+
+- **DIP — Dependency Inversion Principle**  
+  A camada de domínio depende apenas de **abstrações**, não de implementações concretas.  
+  Ex.: UseCases dependem do `Repository` (interface), e não de classes da camada *data*.  
+  A injeção dessas dependências é feita via **Koin**.
+
+---
+
+### **🎨 Design Patterns utilizados**
+
+O projeto também utiliza padrões de projeto importantes para garantir desacoplamento e testabilidade:
+
+- **Observer Pattern**  
+  Implementado com `StateFlow` e `SharedFlow` nas ViewModels.  
+  A UI (Compose) observa mudanças automaticamente sem necessidade de callbacks manuais.
+
+- **Adapter / Delegation Pattern**  
+  Usado na lógica de listas dentro da UI, como:
+    - Adaptação dos dados vindo da API para os modelos da UI
+    - Adaptação das entidades do Room para os models de domínio
+
+## 🖼️ Construção da View (UI Layer)
+
+Toda a interface do **Connections** é desenvolvida em **Jetpack Compose**, utilizando uma abordagem declarativa, reativa e altamente escalável. A comunicação entre a View e a ViewModel segue um fluxo bem definido para garantir clareza, previsibilidade e manutenção simples.
+
+### 🔌 Comunicação View ↔ ViewModel
+
+A camada de apresentação utiliza um padrão baseado em três elementos fundamentais:
+
+-   **UiState** — Representa o estado atual e imutável da tela.
+
+-   **UiEvent** — Eventos disparados pela View para solicitar ações à ViewModel.
+
+-   **UiEffect** — Efeitos únicos, como navegação, mensagens e ações pontuais.
+
+
+### 🧭 Navegação Tipada
+
+A navegação é construída com **Navigation Component**, utilizando rotas totalmente **tipadas**, o que garante:
+
+-   Segurança em tempo de compilação
+
+-   Redução de erros ao passar argumentos
+
+-   Facilidade de expansão ao adicionar novas telas
+
+
+### ✨ Recursos da Camada de UI
+
+-   **Shimmer personalizado** para estados de carregamento.
+
+-   **LazyListState** para controle avançado de listas (scroll, restauração e comportamento fino).
+
+-   **SavedStateHandle** na ViewModel para restaurar e manter estados críticos após recriações.
+
+-   **Cache de dados**, permitindo carregamento mais rápido e experiência mais consistente.
+
+-   **Mapeamento completo de cenários de erro e loading**, oferecendo uma UX mais guiada e previsível.
 
 ## ♿ Acessibilidade
 
-O app foi pensado para ser **acessível**:
+O **Connections** foi desenvolvido seguindo cuidados essenciais de acessibilidade para garantir que qualquer pessoa possa utilizá-lo com conforto, clareza e autonomia.
 
-- Uso de `contentDescription` em imagens e ícones relevantes.
-- Hierarquia de layout organizada, facilitando leitura por serviços de acessibilidade.
-- Cores e contrastes pensados para melhor legibilidade.
-- Componentes de UI do Compose/Material 3 que já trazem acessibilidade embutida como base.
+### ✔️ Boas práticas aplicadas
 
----
+-   **Aprovado no scanner de acessibilidade do Google**
 
-## 🔗 Network (API / Requests)
+-   **Uso de `contentDescription`** em todos os componentes interativos e imagens
 
-### Stack de rede
+-   **Cores e contrastes fortes**, projetados para maximizar legibilidade
 
-- **Retrofit** (atualizado para versão compatível com Kotlin/Compose).
-- **OkHttp** + Logging Interceptor.
-- **Kotlinx Serialization** para JSON.
+-   **Tamanho dos botões pensado para toque acessível**, respeitando zonas mínimas recomendadas
 
-### Configuração de endpoints com BuildConfig
+-   **Aproveitamento dos componentes do Material 3**, que já incluem padrões de acessibilidade incorporados, como foco visível, espaçamento adequado e hierarquia clara
 
-O endpoint da API é configurado via `BuildConfig`, variando por ambiente:
+## 🌐 Network
 
-```kotlin
-buildTypes {
-    debug {
-        buildConfigField(
-            "String",
-            "PICPAY_SERVICE_BASE_URL",
-            "\"https://.../debug/api/\""
-        )
-    }
-    release {
-        buildConfigField(
-            "String",
-            "PICPAY_SERVICE_BASE_URL",
-            "\"https://.../prod/api/\""
-        )
-    }
-}
-```
-Na camada de dados, o app usa `BuildConfig.PICPAY_SERVICE_BASE_URL`, permitindo:
+O **Connections** consome **4 APIs externas**, incluindo autenticação, conteúdo dinâmico e dados de usuários. Todas as chamadas são feitas utilizando **Retrofit**, com um `Service` dedicado para cada API e configuração de URLs via **BuildConfigField**, permitindo fácil gerenciamento de ambientes (Dev / Homolog / Prod) no futuro.
 
-- Troca de endpoint por **build type**.
-- Separação de ambientes (**dev**, **homologação**, **produção/mock**).
+### 🔑 1. Firebase Auth
 
-### Concor­rência & reatividade
+Responsável pela **autenticação de usuários**, gerenciamento de sessão e logout seguro.
 
-- Uso de **Kotlin Coroutines** e **Flow**:
-    - `suspend` functions para chamadas de rede em background.
-    - Fluxos reativos para atualização da UI conforme novos dados chegam.
+### 🖼️ 2. API de Fotos (Picsum)
 
----
+📍 `https://picsum.photos/`  
+Usada para carregar imagens aleatórias exibidas no feed do aplicativo.  
+Permite resultados rápidos e leves sem necessidade de autenticação.
 
-## 🗄️ Banco de Dados (Offline First)
+### 👤 3. API de Pessoas (RandomUser)
 
-A camada de persistência é implementada com **Room**:
+📍 `https://randomuser.me/`  
+Fornece dados fictícios como nome, idade, localização e avatar, utilizados para compor a lista de pessoas no feed.
 
-- **Entidades** (`UserEntity`, etc.).
-- **DAOs** para acesso aos dados.
-- **Database** central (`RoomDatabase`).
+### 🟩 4. API do Desafio (MockAPI - PicPay)
 
-### Estratégia Offline First
+📍 `https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/`  
+Consumida para exibir a lista de seguidores, mantendo compatibilidade com o desafio proposto.
 
-- Carrega primeiro os dados **locais** (Room).
-- Tenta atualizar com dados da **API**:
-    - Em caso de sucesso → atualiza banco + UI.
-    - Em caso de falha → mantém dados locais (quando existentes).
-- Acesso via **Flow**:
-    - Sempre que o banco é atualizado, a UI reage automaticamente.
+### ⚙️ Como está organizado
 
-Isso garante:
+Cada API possui:
 
-- Melhor experiência em conexões instáveis.
-- O app continua útil mesmo sem rede (quando há cache local).
+-   **Uma Interface Service próprio**
 
----
+-   **Um repositório e data source específico**
 
-## ✅ Testes
+-   **Uma interface separada para facilitar testes unitários e mocks**
 
-O projeto contempla testes com foco em **lógica de negócios** e **camada de dados**.
+-   **Base URL definida dentro de `build.gradle.kts` via `buildConfigField`**, permitindo:
 
-### Tipos de testes
+    -   Alternância simples entre ambientes
 
-- **Unit Tests**
-    - Testes de UseCases.
-    - Testes de Repositórios (com fakes de DAO e service).
-    - Testes de models (ex.: `User`).
+    -   Adoção futura de flavors
 
-### Bibliotecas de teste
+    -   Melhor manutenção e escalabilidade
 
-- **JUnit** (migrado para Maven Central, com versão mais recente).
-- **kotlinx-coroutines-test**:
-    - Testes de funções `suspend`.
-    - Manipulação de `TestDispatcher`, `advanceUntilIdle`, etc.
-- **MockK**:
-    - Quando necessário, para mocks de dependências.
-- **Koin Test** (se usado) para validar módulos de injeção de dependência.
+## 💾 Banco de Dados & Offline First
 
----
+O **Connections** utiliza uma abordagem **Offline First**, garantindo que o app continue funcional mesmo sem conexão com a internet. Toda a estrutura foi desenvolvida com foco em **resiliência**, **baixa latência** e **experiência fluida**.
 
-## 📊 Cobertura de Testes (Jacoco)
+### 🧠 Como funciona a lógica Offline First
 
-O projeto integra **Jacoco** para gerar relatórios de cobertura:
+1.  **🔍 Mapeamento completo de erros**
 
-### Configuração
+    -   Todos os fluxos tratam cenários como valores _nulos_, _vazios_, _falhas de rede_ ou _timeouts_.
 
-- Plugin `jacoco` adicionado no módulo `app`.
-- Task customizada `jacocoTestReport`, que:
-    - Depende de `testDebugUnitTest`.
-    - Gera relatórios **XML** e **HTML**.
-    - Ignora classes geradas (R, BuildConfig, etc.).
+    -   Caso haja qualquer erro, a View recebe um estado claro que exibe:
 
-### Como gerar o relatório
+        -   Uma tela de erro dedicada, **ou**
 
-```bash
-./gradlew clean testDebugUnitTest jacocoTestReport
-```
+        -   Um aviso amigável informando que não foi possível carregar os dados.
+
+2.  **📥 Primeiro busca no banco local (Room)**
+
+    -   Ao iniciar qualquer fluxo, o app consulta **primeiro o banco local**.
+
+    -   Isso garante:
+
+        -   Carregamento instantâneo
+
+        -   Experiência offline
+
+        -   Menor dependência da rede
+
+3.  **🔐 Dados permanecem armazenados até o usuário sair da sessão**
+
+    -   Toda a base local (Room) permanece populada durante toda a sessão ativa do usuário.
+
+    -   **A limpeza completa do banco só acontece no logout**, garantindo que:
+
+        -   O usuário sempre veja seus dados atualizados e persistidos
+
+        -   O app abra rapidamente mesmo após ser fechado
+
+        -   As APIs sejam acessadas apenas quando realmente necessário
+
+4.  **🌐 Se não houver dados no Room, busca da API e sincroniza**
+
+    -   Caso determinado fluxo não tenha dados no banco:
+
+        1.  O Repository chama o _remote service_
+
+        2.  O resultado é salvo no **Room**
+
+        3.  A View atualiza automaticamente via Flow/State
+
+    -   Quando existe dado local, ele é exibido **imediatamente**, e a API é chamada em segundo plano para atualização.
+
+5.  **🔄 Sincronização contínua**
+
+    -   O usuário sempre visualiza primeiro os dados locais.
+
+    -   Quando há internet, o app sincroniza silenciosamente:
+
+        -   API → salva no Room → updates fluem para a UI através do Flow
+
+## 🧪 Testes
+
+O **Connections** possui uma cobertura sólida de testes, garantindo estabilidade, previsibilidade e segurança nas camadas mais críticas da aplicação. A estratégia inclui **testes unitários**, **testes integrados** e **testes instrumentados**, cobrindo desde o domínio até a interface.
+
+### ✅ Tipos de testes implementados
+
+### **1. Testes Unitários**
+
+Realizados com **JUnit**, **Mockito/MockK**, **Coroutines Test** , cobrindo:
+
+-   **Repositories**
+
+    -   Mock de DAOs, services e Firebase
+
+    -   Garantia de que tratam corretamente erros, fluxo offline e respostas das APIs
+
+-   **UseCases**
+
+    -   Teste isolado da regra de negócio
+
+    -   Verificação de inputs/outputs e estrutura de estados (_Result_, _Flow_, etc.)
+
+-   **DTOs & Mappers**
+
+    -   Conversões entre camadas mapeadas corretamente
+
+    -   Cenários com campos faltando, nulos, listas vazias, etc.
+
+
+----------
+
+### **2. Testes Instrumentados**
+
+Simulam o comportamento real entre módulos da aplicação, garantindo que:
+
+-   O database interage corretamente com os DAOs
+
+-   Services Retrofit devolvem os dados como esperado
+
+-   Repositories fazem a ponte correta entre Remote ↔ Local
+
+-   UseCases carregam o fluxo completo corretamente
+
+Usando **Robolectric**, **Compose UI Test** e **TestNavHostController**, cobrindo:
+
+-   Testes funcionais de UI em Jetpack Compose
+
+-   Testes de navegação com o Navigation Component tipado
+
+-   Testes de acessibilidade (contentDescription, foco, clique, leitura)
 
 ## 🤖 CI (GitHub Actions)
 
-O projeto possui um workflow de **CI** em `.github/workflows/` que:
+Este projeto possui uma pipeline de **GitHub Actions** que realiza os seguintes passos:
 
-1. Faz **checkout** do repositório.
-2. Configura **JDK 17** (Temurin).
-3. Configura **cache de Gradle**.
-4. Executa:
-    - `./gradlew assembleDebug` → build do APK de debug.
-    - `./gradlew testDebugUnitTest` → testes unitários.
-    - `./gradlew jacocoTestReport` → relatório de cobertura.
-5. Faz upload de artefatos:
-    - `app-debug.apk`
-    - Relatório Jacoco (`app/build/reports/jacoco/jacocoTestReport`).
+1. **Checkout do código**
+2. **Build do APK**
+3. **Execução dos testes**
+4. **Geração de cobertura de testes com Jacoco**
+5. **Análise de código com Detekt**
 
-Isso garante:
-
-- Feedback automatizado em pushes e pull requests.
-- Artefatos prontos (APK + report) para download direto pela interface do GitHub.
-- Verificação de qualidade contínua.
-
----
-
-## 🧩 Outras Tecnologias & Decisões
-
-### Kotlin DSL (`build.gradle.kts`)
-
-- Projeto configurado usando arquivos `.kts`.
-- Facilita uso de recursos do Kotlin na configuração de build.
-
-### Atualização de bibliotecas
-
-Koin, Retrofit, Coil, Room e demais libs foram atualizadas para versões mais recentes, compatíveis com:
-
-- Kotlin moderno
-- Jetpack Compose
-- Gradle 8+
-
-### Remoção do Kotlin Android Extensions
-
-- Deixou de ser compatível com as versões atuais de Kotlin.
-- Substituído por abordagens modernas:
-    - **ViewBinding**, quando necessário.
-    - Ou UI diretamente em **Jetpack Compose**.
-
----
-
-## 🚀 Como rodar o projeto
-
-1. Clone o repositório:
-
-   ```bash
-   git clone https://github.com/SEU-USUARIO/Social-Media-App.git
-   cd Social-Media-App
-   ```
-
-2. Abra o projeto no Android Studio (versão recente com suporte a Kotlin, Jetpack Compose e Gradle 8+).
-
-3. Aguarde o Gradle sync finalizar.
-
-4. Rode o app:
-    - Escolha um emulador ou dispositivo físico.
-    - Clique em Run.
-
-5. Rode os testes + cobertura (opcional):
-   ```bash
-    ./gradlew clean testDebugUnitTest jacocoTestReport
-   ```
-
----
-
-## 📌 Sobre o projeto
-
-Este repositório foi pensado como:
-
-- Um **projeto vitrine** para:
-    - Arquitetura limpa em Android.
-    - Uso de **Jetpack Compose** com estado bem modelado.
-    - Integração de **testes** e **CI com Jacoco**.
-- Um material para **processos seletivos** (como o do PicPay) e para **estudo de boas práticas**.
-
-Sinta-se à vontade para explorar o código, abrir issues ou sugerir melhorias. 😊
-
----
+O workflow garante que o código esteja sempre funcional e com boa qualidade antes de ser integrado.
