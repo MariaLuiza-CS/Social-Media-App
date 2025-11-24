@@ -732,7 +732,7 @@ style:
   UnusedImports:
     active: false
   UnusedParameter:
-    active: true
+    active: false
     allowedNames: 'ignored|expected'
   UnusedPrivateClass:
     active: true

@@ -8,7 +8,6 @@ import com.picpay.desafio.android.presentation.main.MainEvent
 import com.picpay.desafio.android.presentation.main.MainViewModel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +18,6 @@ import kotlin.test.assertEquals
 class MainModuleUnitTest {
     private lateinit var viewModel: MainViewModel
     private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
 
     private val useCase: GetLocalCurrentUseCase = mock()
 
@@ -33,13 +31,14 @@ class MainModuleUnitTest {
     }
 
     @Test
-    fun `getLocalCurrentUser updates uiState and sends NavigateToHome effect`() = runTest (testDispatcher) {
-        viewModel.onEvent(MainEvent.GetLocalCurrentUser)
+    fun `getLocalCurrentUser updates uiState and sends NavigateToHome effect`() =
+        runTest(testDispatcher) {
+            viewModel.onEvent(MainEvent.GetLocalCurrentUser)
 
-        testScheduler.advanceUntilIdle()
+            testScheduler.advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertEquals(false, state.isLoading)
-        assertEquals("Alice", state.currentLocalUser?.name)
-    }
+            val state = viewModel.uiState.value
+            assertEquals(false, state.isLoading)
+            assertEquals("Alice", state.currentLocalUser?.name)
+        }
 }
