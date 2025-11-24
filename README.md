@@ -81,17 +81,14 @@ Contém toda a definição visual do app.
 ### **🧪 Testes**
 O projeto possui dois ambientes de teste distintos:
 
-#### **📦 test/** (Unit Tests + Roboletric)
+#### **📦 test/** (Unit Tests)
 - Testes unitários dos use cases
 - Testes de viewmodel
 - Testes de repository com mocks
-- Testes de UI com **Robolectric** (sem precisar de dispositivo físico)
 
 #### **📦 androidTest/** (Instrumented Tests)
-- Testes instrumentados em dispositivos/emuladores Android
-- Testes de navegação
+- Testes instrumentados que simulam o comportamento real entre módulos da aplicação.
 - Testes de integração com banco de dados (Room)
-- Testes de fluxo completo de UI com Compose Testing
 
 ### **📚 Princípios SOLID aplicados**
 
@@ -325,14 +322,6 @@ Simulam o comportamento real entre módulos da aplicação, garantindo que:
 -   Repositories fazem a ponte correta entre Remote ↔ Local
 
 -   UseCases carregam o fluxo completo corretamente
-
-Usando **Robolectric**, **Compose UI Test** e **TestNavHostController**, cobrindo:
-
--   Testes funcionais de UI em Jetpack Compose
-
--   Testes de navegação com o Navigation Component tipado
-
--   Testes de acessibilidade (contentDescription, foco, clique, leitura)
 
 ## 🤖 CI (GitHub Actions)
 
