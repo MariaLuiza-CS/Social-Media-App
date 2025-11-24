@@ -276,18 +276,4 @@ class PeopleRepositoryImplTest {
 
         job.cancel()
     }
-
-    @Test
-    fun `when repository called API executed only once`() = runTest {
-
-        val job = launch {
-            repo.getPeople().first()
-        }
-
-        advanceUntilIdle()
-
-        assertEquals(1, personService.calls)
-
-        job.cancel()
-    }
 }

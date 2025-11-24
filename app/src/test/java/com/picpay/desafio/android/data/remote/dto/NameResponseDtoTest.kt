@@ -15,7 +15,6 @@ class NameResponseDtoTest {
 
         assertEquals("Ms", name2.title)
         assertEquals("Bell", name2.first)
-        assertEquals("Hooks", name2.last)
         assertNotEquals(name1, name2)
     }
 

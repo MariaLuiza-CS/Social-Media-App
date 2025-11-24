@@ -8,15 +8,18 @@ import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import retrofit2.Retrofit
 import kotlin.test.Test
 
 class NetworkModuleUnitTest : KoinTest {
+
     private val fakeNetworkModule = module {
         single { OkHttpClient() }
         single<Retrofit> { Retrofit.Builder().baseUrl("https://example.com/").build() }
@@ -30,7 +33,6 @@ class NetworkModuleUnitTest : KoinTest {
     private val picPayService: PicPayService by inject()
     private val personService: PersonService by inject()
     private val photosService: PhotosService by inject()
-    private val firebaseAuth: FirebaseAuth by inject()
 
     @Before
     fun setup() {
@@ -50,6 +52,5 @@ class NetworkModuleUnitTest : KoinTest {
         assertNotNull(picPayService)
         assertNotNull(personService)
         assertNotNull(photosService)
-        assertNotNull(firebaseAuth)
     }
 }

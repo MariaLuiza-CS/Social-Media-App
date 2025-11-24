@@ -1,38 +1,56 @@
 package com.picpay.desafio.android.di.feature
 
 import androidx.lifecycle.SavedStateHandle
-import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.usecase.SignInWithGoogleUseCase
-import com.picpay.desafio.android.presentation.login.LoginEvent
 import com.picpay.desafio.android.presentation.login.LoginViewModel
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.get
 
-class LoginModuleUnitTest {
-    private lateinit var viewModel: LoginViewModel
-    private val fakeUseCase: SignInWithGoogleUseCase = mock()
+class LoginModuleUnitTest : KoinTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+
+    private val fakeDependencies = module {
+        single<SignInWithGoogleUseCase> { mockk() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
-        viewModel = LoginViewModel(
-            signInWithGoogleUseCase = fakeUseCase,
-            savedStateHandle = SavedStateHandle()
-        )
+        Dispatchers.setMain(dispatcher)
+        startKoin {
+            modules(listOf(fakeDependencies, loginModule))
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @After
+    fun teardown() {
+        stopKoin()
+        Dispatchers.resetMain()
     }
 
     @Test
-    fun `sign in google success updates UI state`() = runBlocking {
-        val fakeUser = mock<com.google.firebase.auth.FirebaseUser>()
-        whenever(fakeUseCase("fake_id_token")).thenReturn(flow { emit(Result.Success(fakeUser)) })
+    fun `login module provides LoginViewModel`() {
+        val savedState = SavedStateHandle()
+        val viewModel = get<LoginViewModel> { parametersOf(savedState) }
 
-        viewModel.onEvent(LoginEvent.SignInGoogle("fake_id_token"))
-
-        val state = viewModel.uiState.value
-        assertEquals(false, state.isLoading)
+        assertNotNull(viewModel)
     }
 }

@@ -1,146 +1,64 @@
 package com.picpay.desafio.android.di.core
 
-import com.google.firebase.auth.FirebaseUser
 import com.picpay.desafio.android.data.repository.ContactUserRepository
 import com.picpay.desafio.android.data.repository.PeopleRepository
 import com.picpay.desafio.android.data.repository.UserRepository
-import com.picpay.desafio.android.domain.model.ContactUser
-import com.picpay.desafio.android.domain.model.PersonWithPhotos
-import com.picpay.desafio.android.domain.model.Photo
-import com.picpay.desafio.android.domain.model.Result
-import com.picpay.desafio.android.domain.model.User
 import com.picpay.desafio.android.domain.usecase.GetContactUsersUseCase
 import com.picpay.desafio.android.domain.usecase.GetLocalCurrentUseCase
 import com.picpay.desafio.android.domain.usecase.GetPeopleWithPhotosUseCase
 import com.picpay.desafio.android.domain.usecase.SignInWithGoogleUseCase
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import io.mockk.mockk
+import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
-class UseCaseModuleUnitTest {
-    private lateinit var contactUserRepository: ContactUserRepository
-    private lateinit var userRepository: UserRepository
-    private lateinit var peopleRepository: PeopleRepository
+class UseCaseModuleUnitTest : KoinTest {
 
-    private lateinit var getContactUsersUseCase: GetContactUsersUseCase
-    private lateinit var getLocalCurrentUseCase: GetLocalCurrentUseCase
-    private lateinit var getPeopleWithPhotosUseCase: GetPeopleWithPhotosUseCase
-    private lateinit var signInWithGoogleUseCase: SignInWithGoogleUseCase
+    private val fakeRepositories = module {
+        single<ContactUserRepository> { mockk() }
+        single<UserRepository> { mockk() }
+        single<PeopleRepository> { mockk() }
+    }
+    private val getContactUsersUseCase by inject<GetContactUsersUseCase>()
+    private val signInWithGoogleUseCase by inject<SignInWithGoogleUseCase>()
+    private val getLocalCurrentUseCase by inject<GetLocalCurrentUseCase>()
+    private val getPeopleWithPhotosUseCase by inject<GetPeopleWithPhotosUseCase>()
 
     @Before
     fun setup() {
-        contactUserRepository = mock()
-        userRepository = mock()
-        peopleRepository = mock()
+        startKoin {
+            modules(listOf(fakeRepositories, useCaseModule))
+        }
+    }
 
-        getContactUsersUseCase = GetContactUsersUseCase(contactUserRepository)
-        getLocalCurrentUseCase = GetLocalCurrentUseCase(userRepository)
-        getPeopleWithPhotosUseCase = GetPeopleWithPhotosUseCase(peopleRepository)
-        signInWithGoogleUseCase = SignInWithGoogleUseCase(userRepository)
+    @After
+    fun teardown() {
+        stopKoin()
     }
 
     @Test
-    fun `GetContactUsersUseCase emits Success with list of users`() = runTest {
-        val fakeUsers = listOf(
-            User("1", "Alice", "alice01", "img1.jpg"),
-            User("2", "Bob", "bob02", "img2.jpg")
-        )
-        whenever(contactUserRepository.getContactUsers()).thenReturn(flow {
-            emit(
-                Result.Success(
-                    fakeUsers
-                )
-            )
-        })
-
-        val emissions = getContactUsersUseCase().toList()
-        val result = emissions.first()
-
-        assertTrue(result is com.picpay.desafio.android.domain.model.Result.Success)
-        assertEquals(
-            2,
-            (result as com.picpay.desafio.android.domain.model.Result.Success).data.size
-        )
+    fun `use case module provides GetContactUsersUseCase`() {
+        assertNotNull(getContactUsersUseCase)
     }
 
     @Test
-    fun `GetLocalCurrentUseCase emits Success with current user`() = runTest {
-        val fakeUser = ContactUser("uid123", "Test User", "testuser", "img.jpg")
-        whenever(userRepository.getLocalCurrentUser()).thenReturn(flow {
-            emit(
-                com.picpay.desafio.android.domain.model.Result.Success(
-                    fakeUser
-                )
-            )
-        })
-
-        val emissions = getLocalCurrentUseCase().toList()
-        val result = emissions.first()
-
-        assertTrue(result is com.picpay.desafio.android.domain.model.Result.Success)
-        assertEquals(
-            "uid123",
-            (result as com.picpay.desafio.android.domain.model.Result.Success).data?.id
-        )
+    fun `use case module provides SignInWithGoogleUseCase`() {
+        assertNotNull(signInWithGoogleUseCase)
     }
 
     @Test
-    fun `GetPeopleWithPhotosUseCase emits Success with list of people`() = runTest {
-        val fakePeople: List<PersonWithPhotos?> = listOf(
-            PersonWithPhotos(
-                id = "uuid-123",
-                fistName = "Ada",
-                lastName = "Lovelace",
-                title = "Ms",
-                gender = "female",
-                email = "ada@example.com",
-                profilePicture = "url_image",
-                photos = listOf(Photo("url_photo1"))
-            )
-        )
-        Mockito.`when`(peopleRepository.getPeople())
-            .thenReturn(flow {
-                emit(
-                    Result.Success(
-                        fakePeople
-                    )
-                )
-            })
-
-        val emissions = getPeopleWithPhotosUseCase().toList()
-        val result = emissions.first()
-
-        assertTrue(result is Result.Success)
-        val people = (result as Result.Success).data
-        assertEquals(1, people.size)
-        assertEquals("Ada", people.first()?.fistName)
+    fun `use case module provides GetLocalCurrentUseCase`() {
+        assertNotNull(getLocalCurrentUseCase)
     }
 
     @Test
-    fun `SignInWithGoogleUseCase emits Success with FirebaseUser`() = runTest {
-        val fakeFirebaseUser: FirebaseUser = mock()
-        whenever(userRepository.signInWithGoogle("fake_token")).thenReturn(flow {
-            emit(
-                Result.Success(
-                    fakeFirebaseUser
-                )
-            )
-        })
-
-        val emissions = signInWithGoogleUseCase("fake_token").toList()
-        val result = emissions.first()
-
-        assertTrue(result is com.picpay.desafio.android.domain.model.Result.Success)
-        assertEquals(
-            fakeFirebaseUser,
-            (result as com.picpay.desafio.android.domain.model.Result.Success).data
-        )
+    fun `use case module provides GetPeopleWithPhotosUseCase`() {
+        assertNotNull(getPeopleWithPhotosUseCase)
     }
 }

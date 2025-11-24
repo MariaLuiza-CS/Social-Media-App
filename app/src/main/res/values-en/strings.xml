@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Connections</string>
+    <!-- Text -->
+    <string name="txt_error_server">We encountered an error while trying to connect with our server.</string>
+    <string name="txt_error_name">Without name</string>
+    <string name="txt_error_nickname">Without nickname</string>
+    <string name="txt_error_email">Without email</string>
+    <string name="txt_error_download_image">Error to download image</string>
+    <string name="txt_followers">Followers</string>
+    <string name="txt_following">Following</string>
+    <string name="txt_help_connections">Help • Connections</string>
+    <string name="txt_bullet_char">•</string>
+    <string name="txt_create_first_photo">Create your first post</string>
+    <!-- Text -->
 
+    <!-- Button -->
+    <string name="btn_login">Sign in with Google</string>
+    <string name="btn_help">Help</string>
+    <!-- Button -->
+
+    <!-- Content Description -->
+    <string name="ctd_followers">back to Home Screen</string>
+    <string name="ctd_help">back to Login Screen</string>
+    <string name="ctd_image_profile">profile photo</string>
+    <string name="ctd_image_feed">posted photo</string>
+    <string name="ctd_loading_data">loading data</string>
+    <string name="ctd_error_loading_data">error try to get data</string>
+    <string name="ctd_login_photos">login background images</string>
+    <string name="ctd_no_feed_photos">no feed images</string>
+    <!-- Content Description -->
 </resources>

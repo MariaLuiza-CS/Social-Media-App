@@ -1,4 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Connections</string>
+
+    <!-- Text -->
+    <string name="txt_error_server">Encontramos un error al intentar conectarnos con el servidor.</string>
+    <string name="txt_error_name">Sin nombre</string>
+    <string name="txt_error_nickname">Sin apodo</string>
+    <string name="txt_error_email">Sin correo electrónico</string>
+    <string name="txt_error_download_image">Error al descargar la imagen</string>
+    <string name="txt_followers">Seguidores</string>
+    <string name="txt_following">Siguiendo</string>
+    <string name="txt_help_connections">Ayuda • Conexiones</string>
+    <string name="txt_bullet_char">•</string>
+    <string name="txt_create_first_photo">Crea tu primera publicación</string>
+    <!-- Text -->
+
+    <!-- Button -->
+    <string name="btn_login">Iniciar sesión con Google</string>
+    <string name="btn_help">Ayuda</string>
+    <!-- Button -->
+
+    <!-- Content Description -->
+    <string name="ctd_followers">volver a la pantalla principal</string>
+    <string name="ctd_help">volver a la pantalla de inicio de sesión</string>
+    <string name="ctd_image_profile">foto de perfil</string>
+    <string name="ctd_image_feed">foto publicada</string>
+    <string name="ctd_loading_data">cargando datos</string>
+    <string name="ctd_error_loading_data">error al obtener los datos</string>
+    <string name="ctd_login_photos">imágenes de fondo de inicio de sesión</string>
+    <string name="ctd_no_feed_photos">no hay imágenes en el feed</string>
+    <!-- Content Description -->
 </resources>

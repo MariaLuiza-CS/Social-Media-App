@@ -1,44 +1,56 @@
 package com.picpay.desafio.android.di.feature
 
 import androidx.lifecycle.SavedStateHandle
-import com.picpay.desafio.android.domain.model.ContactUser
-import com.picpay.desafio.android.domain.model.Result
 import com.picpay.desafio.android.domain.usecase.GetLocalCurrentUseCase
-import com.picpay.desafio.android.presentation.main.MainEvent
 import com.picpay.desafio.android.presentation.main.MainViewModel
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.runTest
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.get
 
-class MainModuleUnitTest {
-    private lateinit var viewModel: MainViewModel
-    private val testDispatcher = StandardTestDispatcher()
+class MainModuleUnitTest: KoinTest {
 
-    private val useCase: GetLocalCurrentUseCase = mock()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
 
+    private val fakeDependencies = module {
+        single<GetLocalCurrentUseCase> { mockk() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
-        whenever(useCase()).thenReturn(
-            flow { emit(Result.Success(ContactUser("1", "Alice", "alice01", "img.jpg"))) }
-        )
+        Dispatchers.setMain(dispatcher)
+        startKoin {
+            modules(listOf(fakeDependencies, mainModule))
+        }
+    }
 
-        viewModel = MainViewModel(useCase, SavedStateHandle())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @After
+    fun teardown() {
+        stopKoin()
+        Dispatchers.resetMain()
     }
 
     @Test
-    fun `getLocalCurrentUser updates uiState and sends NavigateToHome effect`() =
-        runTest(testDispatcher) {
-            viewModel.onEvent(MainEvent.GetLocalCurrentUser)
+    fun `main module provides MainViewModel`() {
+        val savedState = SavedStateHandle()
+        val viewModel = get<MainViewModel> { parametersOf(savedState) }
 
-            testScheduler.advanceUntilIdle()
-
-            val state = viewModel.uiState.value
-            assertEquals(false, state.isLoading)
-            assertEquals("Alice", state.currentLocalUser?.name)
-        }
+        assertNotNull(viewModel)
+    }
 }

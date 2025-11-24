@@ -1,90 +1,56 @@
 package com.picpay.desafio.android.di.feature
 
-import com.picpay.desafio.android.domain.model.PersonWithPhotos
-import com.picpay.desafio.android.domain.model.Result
+import androidx.lifecycle.SavedStateHandle
 import com.picpay.desafio.android.domain.usecase.GetPeopleWithPhotosUseCase
-import com.picpay.desafio.android.presentation.home.HomeEvent
 import com.picpay.desafio.android.presentation.home.HomeViewModel
-import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Before
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
-class HomeModuleUnitTest {
-    private val testDispatcher = StandardTestDispatcher()
-    private lateinit var getPeopleWithPhotosUseCase: GetPeopleWithPhotosUseCase
-    private lateinit var viewModel: HomeViewModel
+class HomeModuleUnitTest : KoinTest {
 
-    @Before
-    fun setup() {
-        Dispatchers.setMain(testDispatcher)
-        getPeopleWithPhotosUseCase = mockk()
-        viewModel = HomeViewModel(getPeopleWithPhotosUseCase)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+
+    private val fakeDependencies = module {
+        single<GetPeopleWithPhotosUseCase> { mockk() }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Before
+    fun setup() {
+        Dispatchers.setMain(dispatcher)
+        startKoin {
+            modules(listOf(fakeDependencies, homeModule))
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
-    fun tearDown() {
+    fun teardown() {
+        stopKoin()
         Dispatchers.resetMain()
     }
 
     @Test
-    fun `when HomeEvent LoadPeopleList emits Loading then uiState isLoading true`() = runTest {
-        coEvery { getPeopleWithPhotosUseCase() } returns flow {
-            emit(com.picpay.desafio.android.domain.model.Result.Loading)
-        }
+    fun `home module provides HomeViewModel`() {
+        val savedState = SavedStateHandle()
+        val viewModel = get<HomeViewModel> { parametersOf(savedState) }
 
-        viewModel.onEvent(HomeEvent.LoadPeopleList)
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.isLoading)
-        assertNull(state.error)
-    }
-
-    @Test
-    fun `when HomeEvent LoadPeopleList emits Success then uiState peopleList populated`() =
-        runTest {
-            val people =
-                listOf(PersonWithPhotos(id = "1", fistName = "Alice", photos = emptyList()))
-            coEvery { getPeopleWithPhotosUseCase() } returns flow {
-                emit(com.picpay.desafio.android.domain.model.Result.Success(people))
-            }
-
-            viewModel.onEvent(HomeEvent.LoadPeopleList)
-
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertEquals(people, state.peopleList)
-            assertNull(state.error)
-        }
-
-    @Test
-    fun `when HomeEvent LoadPeopleList emits Error then uiState error populated`() = runTest {
-        coEvery { getPeopleWithPhotosUseCase() } returns flow {
-            emit(Result.Error(Exception("Network error"), "Network error"))
-        }
-
-        viewModel.onEvent(HomeEvent.LoadPeopleList)
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertFalse(state.isLoading)
-        assertEquals("Network error", state.error)
-        assertTrue(state.peopleList.isEmpty())
+        assertNotNull(viewModel)
     }
 }

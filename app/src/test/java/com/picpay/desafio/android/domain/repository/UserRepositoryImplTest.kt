@@ -64,12 +64,12 @@ class UserRepositoryImplTest {
 
     @Test
     fun `signInWithGoogle inserts user in dao on success`() = runTest {
-        val fakeUser = Mockito.mock(FirebaseUser::class.java)
-        val authResult = Mockito.mock(AuthResult::class.java)
+        val fakeUser = mock(FirebaseUser::class.java)
+        val authResult = mock(AuthResult::class.java)
 
-        Mockito.`when`(authResult.user).thenReturn(fakeUser)
+        `when`(authResult.user).thenReturn(fakeUser)
 
-        Mockito.`when`(firebaseAuth.signInWithCredential(Mockito.any(AuthCredential::class.java)))
+        `when`(firebaseAuth.signInWithCredential(Mockito.any(AuthCredential::class.java)))
             .thenReturn(Tasks.forResult(authResult))
 
         val results = repository.signInWithGoogle("token").toList()
@@ -77,7 +77,7 @@ class UserRepositoryImplTest {
         assert(results[0] is Result.Loading)
         assert(results[1] is Result.Success)
 
-        Mockito.verify(userDao).insertUser(Mockito.any(UserEntity::class.java))
+        verify(userDao).insertUser(Mockito.any(UserEntity::class.java))
     }
 
     @Test
